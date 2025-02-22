@@ -19,6 +19,7 @@ import {
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
 import type { Student, Attendance, Section } from "@shared/schema";
 
 export default function DashboardCard() {
