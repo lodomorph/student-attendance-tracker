@@ -55,6 +55,7 @@ export default function AttendanceGrid() {
     Attendance[]
   >({
     queryKey: ["/api/attendance", format(date, "yyyy-MM-dd")],
+    queryFn: () => apiRequest("GET", `/api/attendance?date=${format(date, "yyyy-MM-dd")}`),
   });
 
   const markAttendance = useMutation({
