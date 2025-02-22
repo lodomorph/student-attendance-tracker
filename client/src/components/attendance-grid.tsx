@@ -99,13 +99,18 @@ export default function AttendanceGrid() {
   };
 
   const handleSubmit = () => {
-    if (pendingChanges.size === 0) {
+    const allAttendance = filteredStudents?.map(student => ({
+      studentId: student.id,
+      present: getAttendanceStatus(student.id)
+    })) || [];
+    
+    if (allAttendance.length === 0) {
       toast({
-        title: "No changes to save",
+        title: "No students to mark attendance for",
       });
       return;
     }
-    markAttendance.mutate(Array.from(pendingChanges.values()));
+    markAttendance.mutate(allAttendance);
   };
 
   return (
