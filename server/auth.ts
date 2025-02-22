@@ -8,7 +8,6 @@ export function requireAuth(req: Request, res: Response, next: NextFunction) {
   const authHeader = req.headers.authorization;
 
   if (!authHeader) {
-    res.setHeader('WWW-Authenticate', 'Basic');
     return res.status(401).json({ message: "Authentication required" });
   }
 
@@ -16,9 +15,9 @@ export function requireAuth(req: Request, res: Response, next: NextFunction) {
   const [username, password] = auth.split(':');
 
   if (username === DEFAULT_USERNAME && password === DEFAULT_PASSWORD) {
+    req.headers["x-replit-user-name"] = username;
     next();
   } else {
-    res.setHeader('WWW-Authenticate', 'Basic');
     return res.status(401).json({ message: "Invalid credentials" });
   }
 }
