@@ -51,14 +51,10 @@ export default function AttendanceGrid() {
     queryKey: ["/api/students"],
   });
 
-  const { data: attendance = [], isLoading: loadingAttendance } = useQuery<
+  const { data: attendance, isLoading: loadingAttendance } = useQuery<
     Attendance[]
   >({
     queryKey: ["/api/attendance", format(date, "yyyy-MM-dd")],
-    queryFn: async () => {
-      const response = await apiRequest("GET", `/api/attendance?date=${format(date, "yyyy-MM-dd")}`);
-      return Array.isArray(response) ? response : [];
-    },
   });
 
   const markAttendance = useMutation({
@@ -133,28 +129,6 @@ export default function AttendanceGrid() {
     }
     markAttendance.mutate(allAttendance);
   };
-
-  // Initialize attendance when date changes
-  React.useEffect(() => {
-    if (!students || loadingStudents || loadingAttendance) {
-      return;
-    }
-
-    const initialChanges = new Map();
-    students.forEach(student => {
-      const existingAttendance = attendance?.find(
-        a => 
-          a.studentId === student.id && 
-          new Date(a.date).toDateString() === date.toDateString()
-      );
-      initialChanges.set(student.id, { 
-        studentId: student.id, 
-        present: existingAttendance ? existingAttendance.present : true 
-      });
-    });
-    setPendingChanges(initialChanges);
-  }, [date, students, attendance, loadingStudents, loadingAttendance]);
-
 
   return (
     <div className="space-y-4">
