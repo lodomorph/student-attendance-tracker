@@ -148,6 +148,10 @@ export default function AttendanceGrid() {
                 if (date) {
                   setDate(date);
                   setPendingChanges(new Map());
+                  // Invalidate attendance query to trigger refetch
+                  queryClient.invalidateQueries({
+                    queryKey: ["/api/attendance", format(date, "yyyy-MM-dd")],
+                  });
                 }
               }}
               initialFocus
