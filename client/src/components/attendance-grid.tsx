@@ -94,8 +94,15 @@ export default function AttendanceGrid() {
     if (pendingChanges.has(studentId)) {
       return pendingChanges.get(studentId)?.present ?? true;
     }
-    // Fall back to saved attendance or default to present
-    return attendance?.find((a) => a.studentId === studentId)?.present ?? true;
+    
+    // Check if there's existing attendance for this student on this date
+    const existingAttendance = attendance?.find((a) => 
+      a.studentId === studentId && 
+      new Date(a.date).toDateString() === date.toDateString()
+    );
+    
+    // If there's existing attendance, use that value, otherwise default to present
+    return existingAttendance?.present ?? true;
   };
 
   const handleAttendanceChange = (studentId: number, present: boolean) => {
