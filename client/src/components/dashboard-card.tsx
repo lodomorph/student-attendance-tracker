@@ -20,6 +20,8 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recha
 import type { Student, Attendance, Section } from "@shared/schema";
 
 export default function DashboardCard() {
+  const [selectedStudents, setSelectedStudents] = useState<number[]>([]);
+  const { toast } = useToast();
   const { data: students } = useQuery<Student[]>({
     queryKey: ["/api/students"],
   });
@@ -56,6 +58,14 @@ export default function DashboardCard() {
     const studentAttendance = attendance.find((a) => a.studentId === student.id);
     return studentAttendance && !studentAttendance.present;
   });
+
+  const handleStudentSelect = (studentId: number) => {
+    setSelectedStudents(prev => 
+      prev.includes(studentId) 
+        ? prev.filter(id => id !== studentId)
+        : [...prev, studentId]
+    );
+  };
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -129,6 +139,40 @@ export default function DashboardCard() {
         <CardHeader>
           <CardTitle>Absent Students</CardTitle>
           <CardDescription>Students missing today</CardDescription>
+          <div className="flex items-center gap-4 mt-2">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => setSelectedStudents(absentStudentsList.map(s => s.id))}
+            >
+              Select All
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => setSelectedStudents([])}
+            >
+              Deselect All
+            </Button>
+            <Button
+              size="sm"
+              onClick={() => {
+                if (selectedStudents.length === 0) {
+                  toast({
+                    title: "No students selected",
+                    description: "Please select at least one student"
+                  });
+                  return;
+                }
+                toast({
+                  title: "Parents/Guardian Notified",
+                });
+                setSelectedStudents([]);
+              }}
+            >
+              Notify Parent/Guardian
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           {absentStudentsList.length === 0 ? (
@@ -147,6 +191,14 @@ export default function DashboardCard() {
                   const section = sections.find(s => s.id === student.sectionId);
                   return (
                     <TableRow key={student.id}>
+                      <TableCell>
+                        <input
+                          type="checkbox"
+                          checked={selectedStudents.includes(student.id)}
+                          onChange={(e) => handleStudentSelect(student.id)}
+                          className="h-4 w-4 rounded border-gray-300"
+                        />
+                      </TableCell>
                       <TableCell>{student.rollNumber}</TableCell>
                       <TableCell>{student.name}</TableCell>
                       <TableCell>{section?.name}</TableCell>
