@@ -17,6 +17,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
+import { useState } from "react";
 import type { Student, Attendance, Section } from "@shared/schema";
 
 export default function DashboardCard() {
