@@ -1,38 +1,17 @@
-
+import React from "react";
+import { Switch, Route } from "wouter";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { Route, Switch, Redirect } from "wouter";
-import { queryClient } from "@/lib/queryClient";
+import { queryClient } from "./lib/queryClient";
 import { Toaster } from "@/components/ui/toaster";
-import { AuthProvider, useAuth } from "@/contexts/auth-context";
 import Layout from "@/components/layout";
-import LoginPage from "@/pages/login";
 import Students from "@/pages/students";
 import Sections from "@/pages/sections";
 import Attendance from "@/pages/attendance";
 import Reports from "@/pages/reports";
+import NotFound from "@/pages/not-found";
+import LoginPage from "@/pages/login";
 
-function ProtectedRoute({ component: Component, ...rest }: any) {
-  const { isAuthenticated } = useAuth();
-  
-  if (!isAuthenticated) {
-    return <Redirect to="/login" />;
-  }
-  
-  return <Component {...rest} />;
-}
-
-function AppRoutes() {
-  const { isAuthenticated } = useAuth();
-  
-  if (!isAuthenticated) {
-    return (
-      <Switch>
-        <Route path="/login" component={LoginPage} />
-        <Route>{() => <Redirect to="/login" />}</Route>
-      </Switch>
-    );
-  }
-
+function Router() {
   return (
     <Layout>
       <Switch>
@@ -40,7 +19,9 @@ function AppRoutes() {
         <Route path="/students" component={Students} />
         <Route path="/attendance" component={Attendance} />
         <Route path="/reports" component={Reports} />
-        <Route path="/">{() => <Redirect to="/sections" />}</Route>
+        <Route path="/" component={Reports} />
+        <Route path="/login" component={LoginPage} />
+        <Route component={NotFound} />
       </Switch>
     </Layout>
   );
@@ -48,11 +29,11 @@ function AppRoutes() {
 
 export default function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <AppRoutes />
+    <React.StrictMode>
+      <QueryClientProvider client={queryClient}>
+        <Router />
         <Toaster />
-      </AuthProvider>
-    </QueryClientProvider>
+      </QueryClientProvider>
+    </React.StrictMode>
   );
 }
