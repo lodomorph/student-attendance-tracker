@@ -134,6 +134,28 @@ export default function AttendanceGrid() {
     markAttendance.mutate(allAttendance);
   };
 
+  // Initialize attendance when date changes
+  React.useEffect(() => {
+    if (!students || loadingStudents || loadingAttendance) {
+      return;
+    }
+
+    const initialChanges = new Map();
+    students.forEach(student => {
+      const existingAttendance = attendance?.find(
+        a => 
+          a.studentId === student.id && 
+          new Date(a.date).toDateString() === date.toDateString()
+      );
+      initialChanges.set(student.id, { 
+        studentId: student.id, 
+        present: existingAttendance ? existingAttendance.present : true 
+      });
+    });
+    setPendingChanges(initialChanges);
+  }, [date, students, attendance, loadingStudents, loadingAttendance]);
+
+
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-4">
