@@ -102,8 +102,6 @@ export default function AttendanceGrid() {
         new Date(a.date).toDateString() === date.toDateString(),
     );
 
-    console.log(existingAttendance);
-
     // If there's existing attendance, use that value, otherwise default to present
     return existingAttendance?.present ?? true;
   };
@@ -113,6 +111,24 @@ export default function AttendanceGrid() {
       new Map(pendingChanges.set(studentId, { studentId, present })),
     );
   };
+
+  // Initialize attendance when date changes
+  React.useEffect(() => {
+    if (students && attendance) {
+      const initialChanges = new Map();
+      students.forEach(student => {
+        const existingAttendance = attendance.find(
+          a => 
+            a.studentId === student.id && 
+            new Date(a.date).toDateString() === date.toDateString()
+        );
+        if (!existingAttendance) {
+          initialChanges.set(student.id, { studentId: student.id, present: true });
+        }
+      });
+      setPendingChanges(initialChanges);
+    }
+  }, [date, students, attendance]);
 
   const handleSubmit = () => {
     const allAttendance =
