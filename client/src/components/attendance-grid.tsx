@@ -38,7 +38,9 @@ type PendingAttendance = {
 export default function AttendanceGrid() {
   const [date, setDate] = useState<Date>(new Date());
   const [selectedSectionId, setSelectedSectionId] = useState<string>("all");
-  const [pendingChanges, setPendingChanges] = useState<Map<number, PendingAttendance>>(new Map());
+  const [pendingChanges, setPendingChanges] = useState<
+    Map<number, PendingAttendance>
+  >(new Map());
   const { toast } = useToast();
 
   const { data: sections } = useQuery<Section[]>({
@@ -62,7 +64,7 @@ export default function AttendanceGrid() {
           studentId,
           date,
           present,
-        })
+        }),
       );
       await Promise.all(promises);
     },
@@ -82,7 +84,9 @@ export default function AttendanceGrid() {
   }
 
   const filteredStudents = students?.filter(
-    student => selectedSectionId === "all" || student.sectionId.toString() === selectedSectionId
+    (student) =>
+      selectedSectionId === "all" ||
+      student.sectionId.toString() === selectedSectionId,
   );
 
   const getAttendanceStatus = (studentId: number) => {
@@ -95,15 +99,18 @@ export default function AttendanceGrid() {
   };
 
   const handleAttendanceChange = (studentId: number, present: boolean) => {
-    setPendingChanges(new Map(pendingChanges.set(studentId, { studentId, present })));
+    setPendingChanges(
+      new Map(pendingChanges.set(studentId, { studentId, present })),
+    );
   };
 
   const handleSubmit = () => {
-    const allAttendance = filteredStudents?.map(student => ({
-      studentId: student.id,
-      present: getAttendanceStatus(student.id)
-    })) || [];
-    
+    const allAttendance =
+      filteredStudents?.map((student) => ({
+        studentId: student.id,
+        present: getAttendanceStatus(student.id),
+      })) || [];
+
     if (allAttendance.length === 0) {
       toast({
         title: "No students to mark attendance for",
@@ -138,10 +145,7 @@ export default function AttendanceGrid() {
           </PopoverContent>
         </Popover>
 
-        <Select
-          value={selectedSectionId}
-          onValueChange={setSelectedSectionId}
-        >
+        <Select value={selectedSectionId} onValueChange={setSelectedSectionId}>
           <SelectTrigger className="w-[240px]">
             <SelectValue placeholder="Select section" />
           </SelectTrigger>
@@ -156,10 +160,7 @@ export default function AttendanceGrid() {
         </Select>
 
         <div className="ml-auto">
-          <Button
-            onClick={handleSubmit}
-            disabled={pendingChanges.size === 0 || markAttendance.isPending}
-          >
+          <Button onClick={handleSubmit}>
             <Save className="mr-2 h-4 w-4" />
             {markAttendance.isPending ? "Saving..." : "Save Attendance"}
           </Button>
@@ -177,7 +178,7 @@ export default function AttendanceGrid() {
         </TableHeader>
         <TableBody>
           {filteredStudents?.map((student) => {
-            const section = sections.find(s => s.id === student.sectionId);
+            const section = sections.find((s) => s.id === student.sectionId);
             const isPresent = getAttendanceStatus(student.id);
 
             return (
@@ -188,10 +189,10 @@ export default function AttendanceGrid() {
                 <TableCell>
                   <Switch
                     checked={isPresent}
-                    onCheckedChange={(checked) => handleAttendanceChange(student.id, checked)}
-                    className={`${
-                      isPresent ? "bg-green-500" : "bg-red-500"
-                    }`}
+                    onCheckedChange={(checked) =>
+                      handleAttendanceChange(student.id, checked)
+                    }
+                    className={`${isPresent ? "bg-green-500" : "bg-red-500"}`}
                   />
                 </TableCell>
               </TableRow>
