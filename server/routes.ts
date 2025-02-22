@@ -6,7 +6,19 @@ import { insertStudentSchema, insertAttendanceSchema, insertSectionSchema } from
 
 export async function registerRoutes(app: Express) {
   // Apply authentication to all routes
-  app.use("/api", requireAuth);
+  app.get("/api/auth/status", requireAuth, (req, res) => {
+  res.json({ username: req.headers["x-replit-user-name"] });
+});
+
+app.post("/api/auth/login", (_req, res) => {
+  res.status(200).json({ message: "Login successful" });
+});
+
+app.post("/api/auth/logout", (_req, res) => {
+  res.status(200).json({ message: "Logout successful" });
+});
+
+app.use("/api", requireAuth);
   // Section routes
   app.get("/api/sections", async (_req, res) => {
     const sections = await storage.getSections();
