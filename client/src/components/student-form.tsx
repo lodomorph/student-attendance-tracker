@@ -44,6 +44,8 @@ export default function StudentForm({
       email: "",
       phone: "",
       sectionId: undefined,
+      idNumber: "",
+      photo: "",
     },
   });
 
@@ -96,7 +98,33 @@ export default function StudentForm({
             <FormItem>
               <FormLabel>Phone</FormLabel>
               <FormControl>
-                <Input type="tel" {...field} />
+                <Input placeholder="Phone number" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="idNumber"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>ID Number</FormLabel>
+              <FormControl>
+                <Input placeholder="Student ID number" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="photo"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Photo URL</FormLabel>
+              <FormControl>
+                <Input placeholder="Student photo URL" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

@@ -12,8 +12,10 @@ export const students = pgTable("students", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   rollNumber: text("roll_number").notNull().unique(),
+  idNumber: text("id_number").notNull(),
   email: text("email").notNull(),
   phone: text("phone").notNull(),
+  photo: text("photo").notNull(),
   sectionId: serial("section_id").references(() => sections.id),
 });
 
@@ -32,14 +34,18 @@ export const insertSectionSchema = createInsertSchema(sections).extend({
 export const insertStudentSchema = createInsertSchema(students).pick({
   name: true,
   rollNumber: true,
+  idNumber: true,
   email: true,
   phone: true,
+  photo: true,
   sectionId: true,
 }).extend({
   name: z.string().min(2).max(100),
   rollNumber: z.string().min(2).max(20),
+  idNumber: z.string().min(2).max(50),
   email: z.string().email(),
   phone: z.string().min(10).max(15),
+  photo: z.string().url(),
 });
 
 export const insertAttendanceSchema = createInsertSchema(attendance).pick({
