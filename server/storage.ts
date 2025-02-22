@@ -101,14 +101,33 @@ export class MemStorage implements IStorage {
   }
 
   async markAttendance(attendance: InsertAttendance): Promise<Attendance> {
-    const id = this.currentAttendanceId++;
-    const newAttendance: Attendance = { 
-      ...attendance,
-      id,
-      date: new Date(attendance.date).toISOString()
-    };
-    this.attendance.set(id, newAttendance);
-    return newAttendance;
+    const date = new Date(attendance.date).toISOString();
+    
+    // Find existing attendance record for the same student and date
+    const existingAttendance = Array.from(this.attendance.values()).find(
+      a => a.studentId === attendance.studentId && 
+           new Date(a.date).toDateString() === new Date(date).toDateString()
+    );
+
+    if (existingAttendance) {
+      // Update existing record
+      const updatedAttendance: Attendance = {
+        ...existingAttendance,
+        present: attendance.present
+      };
+      this.attendance.set(existingAttendance.id, updatedAttendance);
+      return updatedAttendance;
+    } else {
+      // Create new record
+      const id = this.currentAttendanceId++;
+      const newAttendance: Attendance = { 
+        ...attendance,
+        id,
+        date
+      };
+      this.attendance.set(id, newAttendance);
+      return newAttendance;
+    }
   }
 
   async getStudentAttendance(studentId: number): Promise<Attendance[]> {
