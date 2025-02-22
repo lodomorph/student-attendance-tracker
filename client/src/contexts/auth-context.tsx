@@ -5,8 +5,8 @@ import { useToast } from "@/hooks/use-toast";
 interface AuthContextType {
   isAuthenticated: boolean;
   username: string | null;
-  login: () => void;
-  logout: () => void;
+  login: () => Promise<void>;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -22,7 +22,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (response.ok) {
         const data = await response.json();
         setIsAuthenticated(true);
-        setUsername(data.username);
+        setUsername(data.username || "User");
+      } else {
+        setIsAuthenticated(false);
+        setUsername(null);
       }
     } catch (error) {
       setIsAuthenticated(false);
@@ -36,10 +39,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = async () => {
     try {
-      const response = await fetch("/api/auth/login", { method: "POST" });
+      const response = await fetch("/api/auth/login", { 
+        method: "POST",
+        credentials: "include"
+      });
       if (response.ok) {
         await checkAuth();
         toast({ title: "Logged in successfully" });
+      } else {
+        toast({ title: "Failed to login", variant: "destructive" });
       }
     } catch (error) {
       toast({ title: "Failed to login", variant: "destructive" });
@@ -48,10 +56,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = async () => {
     try {
-      await fetch("/api/auth/logout", { method: "POST" });
-      setIsAuthenticated(false);
-      setUsername(null);
-      toast({ title: "Logged out successfully" });
+      const response = await fetch("/api/auth/logout", { 
+        method: "POST",
+        credentials: "include"
+      });
+      if (response.ok) {
+        setIsAuthenticated(false);
+        setUsername(null);
+        toast({ title: "Logged out successfully" });
+      }
     } catch (error) {
       toast({ title: "Failed to logout", variant: "destructive" });
     }
