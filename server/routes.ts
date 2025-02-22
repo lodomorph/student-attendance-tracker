@@ -1,9 +1,12 @@
 import type { Express } from "express";
 import { createServer } from "http";
 import { storage } from "./storage";
+import { requireAuth } from "./auth";
 import { insertStudentSchema, insertAttendanceSchema, insertSectionSchema } from "@shared/schema";
 
 export async function registerRoutes(app: Express) {
+  // Apply authentication to all routes
+  app.use("/api", requireAuth);
   // Section routes
   app.get("/api/sections", async (_req, res) => {
     const sections = await storage.getSections();
