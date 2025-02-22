@@ -51,11 +51,14 @@ export default function AttendanceGrid() {
     queryKey: ["/api/students"],
   });
 
-  const { data: attendance, isLoading: loadingAttendance } = useQuery<
+  const { data: attendance = [], isLoading: loadingAttendance } = useQuery<
     Attendance[]
   >({
     queryKey: ["/api/attendance", format(date, "yyyy-MM-dd")],
-    queryFn: () => apiRequest("GET", `/api/attendance?date=${format(date, "yyyy-MM-dd")}`),
+    queryFn: async () => {
+      const response = await apiRequest("GET", `/api/attendance?date=${format(date, "yyyy-MM-dd")}`);
+      return Array.isArray(response) ? response : [];
+    },
   });
 
   const markAttendance = useMutation({
