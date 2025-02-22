@@ -114,22 +114,22 @@ export default function AttendanceGrid() {
 
   // Initialize attendance when date changes
   React.useEffect(() => {
-    if (loadingStudents || loadingAttendance) return;
-    
-    if (students) {
-      const initialChanges = new Map();
-      students.forEach(student => {
-        const existingAttendance = attendance?.find(
-          a => 
-            a.studentId === student.id && 
-            new Date(a.date).toDateString() === date.toDateString()
-        );
-        if (!existingAttendance) {
-          initialChanges.set(student.id, { studentId: student.id, present: true });
-        }
-      });
-      setPendingChanges(initialChanges);
+    if (!students || loadingStudents || loadingAttendance) {
+      return;
     }
+    
+    const initialChanges = new Map();
+    students.forEach(student => {
+      const existingAttendance = attendance?.find(
+        a => 
+          a.studentId === student.id && 
+          new Date(a.date).toDateString() === date.toDateString()
+      );
+      if (!existingAttendance) {
+        initialChanges.set(student.id, { studentId: student.id, present: true });
+      }
+    });
+    setPendingChanges(initialChanges);
   }, [date, students, attendance, loadingStudents, loadingAttendance]);
 
   const handleSubmit = () => {
