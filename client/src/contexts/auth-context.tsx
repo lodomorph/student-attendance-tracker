@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
@@ -46,13 +45,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ username, password }),
-        credentials: "include",
+        credentials: "include", // Added credentials for cookie inclusion
       });
-      
+
       if (response.ok) {
         await checkAuth();
-        setLocation("/");
         toast({ title: "Logged in successfully" });
+        window.location.href = "/reports"; // Redirect to dashboard
       } else {
         toast({ title: "Invalid credentials", variant: "destructive" });
       }
